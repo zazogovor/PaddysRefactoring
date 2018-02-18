@@ -25,20 +25,67 @@ public class CreateBankDialog extends JFrame {
 	private final static int TABLE_SIZE = 29;
 	private Random rand = new Random();
 	private ArrayList<BankAccount> accountList;
+	private JPanel dataPanel, buttonPanel;
+	private JButton addButton, cancelButton;
 	private JLabel accountNumberLabel, firstNameLabel, surnameLabel, accountTypeLabel, balanceLabel, overdraftLabel;
 	private JComboBox comboBox;
 	private JTextField accountNumberTextField;
 	private JTextField firstNameTextField, surnameTextField, accountTypeTextField, balanceTextField, overdraftTextField;
 	private final String[] comboTypes = {"Current", "Deposit"};
 	
-	
 	public CreateBankDialog(HashMap<Integer, BankAccount> accounts, int accountID, int counter) {
 		super("Add Bank Details");
+		initComponents();
 		
 		this.accountID = accountID;
 		
+		addButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String accountNumber = accountNumberTextField.getText();
+				String surname = surnameTextField.getText();
+				String firstName = firstNameTextField.getText();
+				String accountType = comboBox.getSelectedItem().toString();
+		
+				if (accountNumber != null && accountNumber.length()==8 && surname != null && firstName != null && accountType != null) {
+					try {
+						boolean accNumTaken=false;
+						for (Map.Entry<Integer, BankAccount> entry : accounts.entrySet()) {					
+							 if(entry.getValue().getAccountNumber().trim().equals(accountNumberTextField.getText())){
+								 accNumTaken=true;	
+							 }
+						 }
+						
+						if(!accNumTaken){
+							BankAccount account = new BankAccount(accountID, accountNumber, surname, firstName, accountType, 0.0, 0.0);
+							accounts.put(accountID, account);
+						}
+						else{
+							JOptionPane.showMessageDialog(null, "Account Number must be unique");
+						}
+					}
+					catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Number format exception");					
+					}
+				}
+				else JOptionPane.showMessageDialog(null, "Please make sure all fields have values, and Account Number is a unique 8 digit number");
+				dispose();
+			}
+		});
+		
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		
+		setSize(400,800);
+		pack();
+		setVisible(true);
+	}
+	
+	private void initComponents(){
 		setLayout(new BorderLayout());
-		JPanel dataPanel = new JPanel(new MigLayout());
+		dataPanel = new JPanel(new MigLayout());
 		comboBox = new JComboBox(comboTypes);
 		
 		accountNumberLabel = new JLabel("Photograph file name: ");
@@ -90,56 +137,13 @@ public class CreateBankDialog extends JFrame {
 		
 		add(dataPanel, BorderLayout.CENTER);
 		
-		JPanel buttonPanel = new JPanel(new FlowLayout());
-		JButton addButton = new JButton("Add");
-		JButton cancelButton = new JButton("Cancel");
+		buttonPanel = new JPanel(new FlowLayout());
+		addButton = new JButton("Add");
+		cancelButton = new JButton("Cancel");
 		
 		buttonPanel.add(addButton);
 		buttonPanel.add(cancelButton);
 		
 		add(buttonPanel, BorderLayout.SOUTH);
-		
-		addButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String accountNumber = accountNumberTextField.getText();
-				String surname = surnameTextField.getText();
-				String firstName = firstNameTextField.getText();
-				String accountType = comboBox.getSelectedItem().toString();
-		
-				if (accountNumber != null && accountNumber.length()==8 && surname != null && firstName != null && accountType != null) {
-					try {
-						boolean accNumTaken=false;
-						for (Map.Entry<Integer, BankAccount> entry : accounts.entrySet()) {					
-							 if(entry.getValue().getAccountNumber().trim().equals(accountNumberTextField.getText())){
-								 accNumTaken=true;	
-							 }
-						 }
-						
-						if(!accNumTaken){
-							BankAccount account = new BankAccount(accountID, accountNumber, surname, firstName, accountType, 0.0, 0.0);
-							accounts.put(accountID, account);
-						}
-						else{
-							JOptionPane.showMessageDialog(null, "Account Number must be unique");
-						}
-					}
-					catch (Exception ex) {
-						JOptionPane.showMessageDialog(null, "Number format exception");					
-					}
-				}
-				else JOptionPane.showMessageDialog(null, "Please make sure all fields have values, and Account Number is a unique 8 digit number");
-				dispose();
-			}
-		});
-		
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-		
-		setSize(400,800);
-		pack();
-		setVisible(true);
 	}
 }
