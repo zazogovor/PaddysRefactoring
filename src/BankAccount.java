@@ -1,3 +1,5 @@
+import javax.swing.JOptionPane;
+
 public class BankAccount {
 	
 	private int accountID;
@@ -7,8 +9,6 @@ public class BankAccount {
 	private String accountType;
 	private double balance;
 	private double overdraft;
-	
-	public static int count = 0;
 	
 	public BankAccount(int accountID, String accountNumber, String surname, String firstName, String accountType, double balance, double overdraft){
 		this.accountID = accountID;
@@ -83,6 +83,35 @@ public class BankAccount {
 	
 	public String toString(){
 		return "\nAccount id: " + accountID +  "Account Num: " + accountNumber + "\nName: " + surname + " " + firstName+"\n";
+	}
+	
+	public void deposit(String depositAmount){
+		setBalance(getBalance() + Double.parseDouble(depositAmount));
+	}
+	
+	public void withdraw(String withdrawAmount){
+		if(getAccountType().trim().equals("Current")){
+			if(Double.parseDouble(withdrawAmount) > getBalance() + getOverdraft())
+				JOptionPane.showMessageDialog(null, "Transaction exceeds overdraft limit");
+			else{
+				setBalance(getBalance() - Double.parseDouble(withdrawAmount));
+			}
+		}
+		else if(getAccountType().trim().equals("Deposit")){
+			if(Double.parseDouble(withdrawAmount) <= getBalance()){
+				setBalance(getBalance()-Double.parseDouble(withdrawAmount));
+			}
+			else
+				JOptionPane.showMessageDialog(null, "Insufficient funds.");
+		}
+	}
+	
+	public void calculateInterest(Double interestRate){
+		if(getAccountType().equals("Deposit")){
+			double equation = 1 + ((interestRate)/100);
+			setBalance(getBalance()*equation);
+			JOptionPane.showMessageDialog(null, "Balances Updated");
+		}
 	}
 
 }
