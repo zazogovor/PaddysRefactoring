@@ -15,6 +15,7 @@ public class FileManagement {
 	private static JFileChooser fc;
 	private static String fileToSaveAs = "";
 	private static int accounts_counter;
+	private static File openedFile;
 	
 	public static HashMap<Integer, BankAccount> readRecords(){
 		RandomAccessBankAccount record = new RandomAccessBankAccount();
@@ -33,70 +34,71 @@ public class FileManagement {
 		        accounts_counter++;
 		        table.put(accounts_counter, ba);
 			}
-	  }
-	  catch ( EOFException eofException ){
+		}
+		catch ( EOFException eofException ){
 			return table;
-	  }
-	  catch ( IOException ioException ){
-		  JOptionPane.showMessageDialog(null, "Error reading file.");
-		  System.exit( 1 );
-		  return null;
-	  }
+		}
+		catch ( IOException ioException ){
+			JOptionPane.showMessageDialog(null, "Error reading file.");
+			System.exit( 1 );
+			return null;
+		}
 	}
 	
-	public static void saveToFile(HashMap<Integer, BankAccount> table){
-		RandomAccessBankAccount record = new RandomAccessBankAccount();
-	    
-		for (Map.Entry<Integer, BankAccount> entry : table.entrySet()) {
-		   record.setAccountID(entry.getValue().getAccountID());
-		   record.setAccountNumber(entry.getValue().getAccountNumber());
-		   record.setFirstName(entry.getValue().getFirstName());
-		   record.setSurname(entry.getValue().getSurname());
-		   record.setAccountType(entry.getValue().getAccountType());
-		   record.setBalance(entry.getValue().getBalance());
-		   record.setOverdraft(entry.getValue().getOverdraft());
-		   
-		   if(output!=null){
-		      try {
-					record.write( output );
-				} catch (IOException u) {
-					u.printStackTrace();
-				}
-		   }   
-		} 
-	}
-	
-	public static void openFileRead(HashMap<Integer, BankAccount> table){
+	public static Boolean openFileRead(HashMap<Integer, BankAccount> table){
 		table.clear();
 		fc = new JFileChooser();
 		int returnVal = fc.showOpenDialog(null);
 		 
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-        } 
-        else {
-        }
 		try{
-			if(fc.getSelectedFile()!=null)
-				input = new RandomAccessFile( fc.getSelectedFile(), "r" );
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+	            if(fc.getSelectedFile()!=null){
+					input = new RandomAccessFile( fc.getSelectedFile(), "r" );
+					output = new RandomAccessFile( fc.getSelectedFile(), "rw" );
+					openedFile = fc.getSelectedFile();
+					return true;
+				}
+	            else
+	            	return false;
+	        }
+			else
+				return false;
 		}
 		catch ( IOException ioException ){
 			JOptionPane.showMessageDialog(null, "File Does Not Exist.");
+			return false;
 		}
 	}
 	
-	public static void openFileWrite(){
-		if(fileToSaveAs!=""){
-	      try{
-	         output = new RandomAccessFile( fileToSaveAs, "rw" );
-	         JOptionPane.showMessageDialog(null, "Accounts saved to " + fileToSaveAs);
 	      }
-	      catch ( IOException ioException ){
-	    	  JOptionPane.showMessageDialog(null, "File does not exist.");
-	      }
+	public static void saveToFile(HashMap<Integer, BankAccount> table){
+		if(output != null){
+			RandomAccessBankAccount record = new RandomAccessBankAccount();
+		    
+			for (Map.Entry<Integer, BankAccount> entry : table.entrySet()) {
+			   record.setAccountID(entry.getValue().getAccountID());
+			   record.setAccountNumber(entry.getValue().getAccountNumber());
+			   record.setFirstName(entry.getValue().getFirstName());
+			   record.setSurname(entry.getValue().getSurname());
+			   record.setAccountType(entry.getValue().getAccountType());
+			   record.setBalance(entry.getValue().getBalance());
+			   record.setOverdraft(entry.getValue().getOverdraft());
+			   
+			   if(output!=null){
+			      try {
+						record.write( output );
+					} catch (IOException u) {
+						u.printStackTrace();
+					}
+			   }   
+			}
+
+	         JOptionPane.showMessageDialog(null, "Accounts saved to " + openedFile.getName());
 		}
-		else
-		   saveToFileAs();
+		else{
+			saveToFileAs();
+			saveToFile(table);
+		}
 	}
 	
 	public static void saveToFileAs(){
@@ -112,11 +114,9 @@ public class FileManagement {
          else
              JOptionPane.showMessageDialog(null, "Save cancelled by user");
 	     try {
-	    	 if(fc.getSelectedFile()==null){
-	        	JOptionPane.showMessageDialog(null, "Cancelled");
+	    	 if(fc.getSelectedFile()!=null){
+		        	output = new RandomAccessFile(fc.getSelectedFile(), "rw" );
 	    	 }
-	    	 else
-	        	output = new RandomAccessFile(fc.getSelectedFile(), "rw" );
 		} 
 	    catch (FileNotFoundException e) {
 			e.printStackTrace();

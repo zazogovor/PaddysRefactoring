@@ -21,23 +21,16 @@ import net.miginfocom.swing.MigLayout;
 
 public class CreateBankDialog extends JFrame {
 	
-	private int accountID = 0;
-	private final static int TABLE_SIZE = 29;
-	private Random rand = new Random();
-	private ArrayList<BankAccount> accountList;
 	private JPanel dataPanel, buttonPanel;
 	private JButton addButton, cancelButton;
 	private JLabel accountNumberLabel, firstNameLabel, surnameLabel, accountTypeLabel, balanceLabel, overdraftLabel;
 	private JComboBox comboBox;
-	private JTextField accountNumberTextField;
-	private JTextField firstNameTextField, surnameTextField, accountTypeTextField, balanceTextField, overdraftTextField;
-	private final String[] comboTypes = {"Current", "Deposit"};
+	private JTextField firstNameTextField, surnameTextField, balanceTextField, overdraftTextField, accountNumberTextField;
+	private final String[] accountTypes = {"Current", "Deposit"};
 	
 	public CreateBankDialog(HashMap<Integer, BankAccount> accounts, int accountID, int counter) {
 		super("Add Bank Details");
 		initComponents();
-		
-		this.accountID = accountID;
 		
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -57,7 +50,7 @@ public class CreateBankDialog extends JFrame {
 						
 						if(!accNumTaken){
 							BankAccount account = new BankAccount(accountID, accountNumber, surname, firstName, accountType, 0.0, 0.0);
-							accounts.put(accountID, account);
+							accounts.put(counter, account);
 						}
 						else{
 							JOptionPane.showMessageDialog(null, "Account Number must be unique");
@@ -86,7 +79,6 @@ public class CreateBankDialog extends JFrame {
 	private void initComponents(){
 		setLayout(new BorderLayout());
 		dataPanel = new JPanel(new MigLayout());
-		comboBox = new JComboBox(comboTypes);
 		
 		accountNumberLabel = new JLabel("Photograph file name: ");
 		accountNumberTextField = new JTextField(15);
@@ -113,8 +105,7 @@ public class CreateBankDialog extends JFrame {
 		dataPanel.add(firstNameTextField, "growx, pushx, wrap");
 
 		accountTypeLabel = new JLabel("Account Type: ");
-		accountTypeTextField = new JTextField(5);
-		accountTypeTextField.setEditable(true);
+		comboBox = new JComboBox(accountTypes);
 		
 		dataPanel.add(accountTypeLabel, "growx, pushx");	
 		dataPanel.add(comboBox, "growx, pushx, wrap");
