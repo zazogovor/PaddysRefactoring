@@ -70,7 +70,6 @@ public class FileManagement {
 		}
 	}
 	
-	      }
 	public static void saveToFile(HashMap<Integer, BankAccount> table){
 		if(output != null){
 			RandomAccessBankAccount record = new RandomAccessBankAccount();

@@ -345,7 +345,6 @@ public class BankApplication extends JFrame {
 				saveOpenValues();
 				if(!accountsHashMap.isEmpty()){
 					currentAccountPosition = accountsHashMap.size();
-					System.out.println(accountsHashMap.get(currentAccountPosition).getAccountID()+"");
 					displayDetails(currentAccountPosition);
 				}
 			}
