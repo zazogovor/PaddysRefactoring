@@ -53,6 +53,5 @@ public class RandomAccessBankAccount extends BankAccount {
 		
 		buffer.setLength(15);
 		file.writeChars(buffer.toString());
-	}
-			
+	}	
 }
